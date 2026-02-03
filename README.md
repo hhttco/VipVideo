@@ -25,6 +25,9 @@ FLUSH PRIVILEGES;
 
 创建数据表
 ```
+use video;
+```
+```
 CREATE TABLE `visitor_logs` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `ip_address` VARCHAR(45) NOT NULL,
