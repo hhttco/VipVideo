@@ -9,7 +9,7 @@ systemctl enable --now nginx mariadb
 mysql初始化
 mysql_secure_installation
 
-登陆mysql创建数据库 如果修改密码要重新编译源代码
+登陆mysql创建数据库 配置完密码后修改配置文件
 mysql -u root -p
 CREATE DATABASE video CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 GRANT ALL PRIVILEGES ON video.* TO video@localhost IDENTIFIED BY 'vip#video123!';
@@ -33,6 +33,10 @@ chown -R www-data:www-data /var/www/vv && chmod -R 755 /var/www/vv
 rm ./vv.zip
 chmod +x /var/www/vv/vv
 
+修改密码
+vim config.json
+
+配置守护进程
 vim /etc/systemd/system/vv.service
 [Unit]
 Description=Vip video
