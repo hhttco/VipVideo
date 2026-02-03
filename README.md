@@ -52,6 +52,7 @@ chmod +x /var/www/vv/vv
 
 修改密码
 ```
+cd vv
 vim config.json
 ```
 
