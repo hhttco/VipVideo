@@ -1,0 +1,8 @@
+{
+  "db_user": "root",
+  "db_password": "你的数据库密码",
+  "db_host": "127.0.0.1",
+  "db_port": "3306",
+  "db_name": "video_db",
+  "server_port": ":8080"
+}
