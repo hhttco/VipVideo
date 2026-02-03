@@ -6,20 +6,58 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
+type Config struct {
+	DBUser     string `json:"db_user"`
+	DBPassword string `json:"db_password"`
+	DBHost     string `json:"db_host"`
+	DBPort     string `json:"db_port"`
+	DBName     string `json:"db_name"`
+	ServerPort string `json:"server_port"`
+}
+
 var db *sql.DB
+var appConfig Config
+
+// 【修改：增加读取配置文件函数】
+func loadConfig() {
+	file, err := os.Open("config.json")
+	if err != nil {
+		log.Fatal("无法打开配置文件 config.json:", err)
+	}
+	defer file.Close()
+
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&appConfig)
+	if err != nil {
+		log.Fatal("配置文件格式错误:", err)
+	}
+}
 
 func initDB() {
 	// DSN格式: 用户名:密码@tcp(地址:3306)/数据库名
-	dsn := "video:vip#video123!@tcp(127.0.0.1:3306)/video?charset=utf8mb4&parseTime=True"
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True",
+		appConfig.DBUser,
+		appConfig.DBPassword,
+		appConfig.DBHost,
+		appConfig.DBPort,
+		appConfig.DBName,
+	)
+
 	var err error
 	db, err = sql.Open("mysql", dsn)
 	if err != nil {
 		log.Fatal("数据库连接失败:", err)
+	}
+
+	// 测试数据库连接
+	if err = db.Ping(); err != nil {
+		log.Fatal("数据库连接失败，请检查配置:", err)
 	}
 }
 
@@ -46,6 +84,7 @@ func visitHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	loadConfig()
 	initDB()
 	defer db.Close()
 
@@ -56,9 +95,8 @@ func main() {
 	// http.FileServer 会自动寻找目录下的 index.html
 	http.Handle("/", http.FileServer(http.Dir("./")))
 
-	fmt.Println("🚀 服务启动成功！")
-	fmt.Println("🔗 请访问: http://localhost:8080")
+	fmt.Printf("🚀 服务已启动: http://localhost%s\n", appConfig.ServerPort)
 
 	// 启动监听
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(appConfig.ServerPort, nil))
 }
