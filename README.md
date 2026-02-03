@@ -69,7 +69,7 @@ After=network.target
 Type=simple
 User=www-data
 WorkingDirectory=/var/www/vv
-ExecStart=/var/www/sw/vv
+ExecStart=/var/www/vv/vv
 Restart=always
 MemoryLimit=50M
 
